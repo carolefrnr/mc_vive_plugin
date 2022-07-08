@@ -1,0 +1,22 @@
+prefix=/usr/local
+exec_prefix=/usr/local
+libdir=/home/carole/mc_rtc_install/lib
+bindir=/usr/local/bin
+pkglibdir=/usr/local/lib/VivePlugin
+includedir=/usr/local/include
+datarootdir=/usr/local/share
+pkgdatarootdir=/usr/local/share
+docdir=/usr/local/share/doc/VivePlugin
+doxygendocdir=/usr/local/share/doc/VivePlugin/doxygen-html
+
+Name: VivePlugin
+Description: 
+URL: 
+Version: 0.0.1
+Requires: 
+Conflicts: 
+Libs: -L${libdir} 
+Libs.private: 
+Cflags:  -I${includedir}
+
+

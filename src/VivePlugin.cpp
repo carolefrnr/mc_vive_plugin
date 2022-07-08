@@ -165,7 +165,7 @@ ViveData_Vector ViveTracking::getPoseData() {
         angularvelocity = trackedDevicePose.vAngularVelocity;
         tracking.q_track_head = {position.v[0], position.v[1], position.v[2], quaternion.x, quaternion.y, quaternion.z, quaternion.w,velocity.v[0], velocity.v[1], velocity.v[2], angularvelocity.v[0], angularvelocity.v[1], angularvelocity.v[2], whichBody}; 
         tracking.r_head << matrix_rotation.m[0][0],matrix_rotation.m[0][1],matrix_rotation.m[0][2],matrix_rotation.m[1][0],matrix_rotation.m[1][1],matrix_rotation.m[1][2],matrix_rotation.m[2][0],matrix_rotation.m[2][1],matrix_rotation.m[2][2];
-        tracking.head_tracked = trackedControllerPose.bPoseIsValid;
+        tracking.head_tracked = trackedDevicePose.bPoseIsValid;
       }
     }
   }
@@ -226,37 +226,38 @@ ViveDataControllerButton ViveTracking::getControllerEvent() {
 ViveDataButtonEvent ViveTracking::assignedButtonEvent(vr::VRControllerState_t state, ViveDataButtonEvent joy, vr::TrackedDeviceIndex_t unDevice,bool m_rbShowTrackedDevice[vr::k_unMaxTrackedDeviceCount]) {
     state.ulButtonPressed = 0;
     if (vr_pointer->GetControllerState(unDevice, &state, sizeof(state))) {
-        m_rbShowTrackedDevice[unDevice] = state.ulButtonPressed == 0;
-        if (state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Axis1)) { // Trigger
-          if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Axis1)) {
-            joy.triggerIsPress = true;
-          }else{joy.triggerIsPress = false;}
-          joy.triggerIsTouch= true;
-        }
-        else if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)){ // Menu
-          if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
-            joy.menuIsPress = true;
-          }else{joy.menuIsPress = false;}
-          joy.menuIsTouch= true;
-        }
-        else if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Grip)){ // Grippers (left and right)
-          if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
-            joy.gripIsTouch = true;
-          }else{joy.gripIsTouch = false;}
-          joy.gripIsTouch= true;
-        }
-        else if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Axis0)){ // Touchpad
-          if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
-            joy.trackpadIsPress = true;
-          }else{joy.gripIsTouch = false;}
-          joy.trackpadIsTouch= true;
-          joy.x = state.rAxis->x;
-          joy.y = state.rAxis->y;
-        }
-        else{
-          joy.gripIsTouch = joy.menuIsTouch = joy.triggerIsTouch = joy.trackpadIsTouch = false;
-          joy.x = joy.y = 0;
-        }
+      m_rbShowTrackedDevice[unDevice] = state.ulButtonPressed == 0;
+      if (state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Axis1)) { // Trigger
+      if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Axis1)) {
+        joy.triggerIsPress = true;
+      }else{joy.triggerIsPress = false;}
+      joy.triggerIsTouch= true;
+      }
+      else if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)){ // Menu
+      if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
+        joy.menuIsPress = true;
+      }else{joy.menuIsPress = false;}
+      joy.menuIsTouch= true;
+      }
+      else if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Grip)){ // Grippers (left and right) 
+      joy.gripIsPress = true; 
+      // if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
+      //   joy.gripIsPress = true;
+      // }else{joy.gripIsPress = false; }
+      // joy.gripIsTouch= true;
+      }
+      else if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Axis0)){ // Touchpad
+        if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
+          joy.trackpadIsPress = true;
+        }else{joy.gripIsTouch = false;}
+        joy.trackpadIsTouch= true;
+        joy.x = state.rAxis->x;
+        joy.y = state.rAxis->y;
+      }
+      else{
+        joy.gripIsPress = joy.gripIsTouch = joy.menuIsTouch = joy.triggerIsTouch = joy.trackpadIsTouch = false;
+        joy.x = joy.y = 0;
+      }
     }
   return joy;
 }
@@ -345,6 +346,7 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
       switch (i){
         case 0: // Head
           if(!dataHTC.q_track_head.empty()){
+            data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_head[0], dataHTC.q_track_head[1], dataHTC.q_track_head[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_head.transpose();
             auto acc = Vive.AccelData(dataHTC.q_track_head, t, dataHTC.t_head, data_vel_.body_vel_[name]); 
             data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_head[10], dataHTC.q_track_head[11], dataHTC.q_track_head[12]);
@@ -354,8 +356,7 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           break;
         case 1 : // LeftHand
           if(!dataHTC.q_track_lhand.empty()){
-            // target = sva::PTransformd{Eigen::Vector3d(dataHTC.q_track_lhand[0], dataHTC.q_track_lhand[1], dataHTC.q_track_lhand[2])};
-            // targetPepper = sva::PTransformd{Eigen::Vector3d(-dataHTC.q_track_lhand[2], -dataHTC.q_track_lhand[0], dataHTC.q_track_lhand[1])};
+            data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_lhand[0], dataHTC.q_track_lhand[1], dataHTC.q_track_lhand[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_lhand.transpose();
             data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_lhand[10], dataHTC.q_track_lhand[11], dataHTC.q_track_lhand[12]); 
             isTracked.isConnect[name] = dataHTC.lhand_tracked; 
@@ -363,8 +364,7 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           break;
         case 2: // RightHand
           if(!dataHTC.q_track_rhand.empty()){
-            // Eigen::Vector3d target{-dataHTC.q_track_rhand[0], -dataHTC.q_track_rhand[1], dataHTC.q_track_rhand[2]*0.8};
-            // targetPepper = sva::PTransformd{Eigen::Vector3d(-dataHTC.q_track_rhand[2], -dataHTC.q_track_rhand[0], dataHTC.q_track_rhand[1])};
+            data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_rhand[0], dataHTC.q_track_rhand[1], dataHTC.q_track_rhand[2]);  
             rotdata_.rot_poses_[name] = dataHTC.r_rhand.transpose();
             data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rhand[10], dataHTC.q_track_rhand[11], dataHTC.q_track_rhand[12]); 
             isTracked.isConnect[name] = dataHTC.rhand_tracked; 
@@ -372,6 +372,7 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           break;
         case 3: // LeftArm
           if(!dataHTC.q_track_larm.empty()){
+            data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_larm[0], dataHTC.q_track_larm[1], dataHTC.q_track_larm[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_larm.transpose();
             data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_larm[10], dataHTC.q_track_larm[11], dataHTC.q_track_larm[12]); 
             isTracked.isConnect[name] = dataHTC.larm_tracked; 
@@ -379,6 +380,7 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           break;
         case 4: // RightArm
           if(!dataHTC.q_track_rarm.empty()){
+            data_.body_poses_[name]  = Eigen::Vector3d(dataHTC.q_track_rarm[0], dataHTC.q_track_rarm[1], dataHTC.q_track_rarm[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_rarm.transpose();
             data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rarm[10], dataHTC.q_track_rarm[11], dataHTC.q_track_rarm[12]); 
             isTracked.isConnect[name] = dataHTC.rarm_tracked; 
@@ -386,23 +388,23 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           break;
         case 5: // LeftFoot or Elbow
           if(!dataHTC.q_track_lfoot.empty()){
+            data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_lfoot[0], dataHTC.q_track_lfoot[1], dataHTC.q_track_lfoot[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_lfoot.transpose();
             data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_lfoot[10], dataHTC.q_track_lfoot[11], dataHTC.q_track_lfoot[12]); 
             isTracked.isConnect[name] = dataHTC.lfoot_tracked; 
-            // target = sva::PTransformd{Eigen::Vector3d(-dataHTC.q_track_lfoot[2], -dataHTC.q_track_lfoot[0], dataHTC.q_track_lfoot[1])};
           }
           break;
         case 6: // RightFoot or Elbow
           if(!dataHTC.q_track_rfoot.empty()){
+            data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_rfoot[0], dataHTC.q_track_rfoot[1], dataHTC.q_track_rfoot[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_rfoot.transpose();
             data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rfoot[10], dataHTC.q_track_rfoot[11], dataHTC.q_track_rfoot[12]); 
             isTracked.isConnect[name] = dataHTC.rfoot_tracked; 
-            // target = sva::PTransformd{Eigen::Vector3d(-dataHTC.q_track_rfoot[2], -dataHTC.q_track_rfoot[0], dataHTC.q_track_rfoot[1])};
           }
           break;
         case 7: // Pelvis
           if(!dataHTC.q_track_pelvis.empty()){
-            // target = {-dataHTC.q_track_pelvis[2]*0,dataHTC.q_track_pelvis[0]*0, dataHTC.q_track_pelvis[1]};
+            data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_pelvis[0], dataHTC.q_track_pelvis[1], dataHTC.q_track_pelvis[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_pelvis.transpose();
             data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_pelvis[10], dataHTC.q_track_pelvis[11], dataHTC.q_track_pelvis[12]); 
             isTracked.isConnect[name] = dataHTC.pelvis_tracked; 

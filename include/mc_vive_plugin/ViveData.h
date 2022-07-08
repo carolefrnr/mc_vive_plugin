@@ -21,5 +21,8 @@ namespace mc_vive_plugin
       bool trackpadIsTouch;
       double x; // Only for trackpad, value between -1 and 1
       double y; // Only for trackpad, value between -1 and 1
+
+      // NewData 
+      bool isValid; 
     };
 }

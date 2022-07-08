@@ -57,7 +57,7 @@ namespace mc_vive_plugin
 
     // All data send to the datastore
     struct ViveData {
-        std::map<std::string, sva::PTransformd> body_poses_;
+        std::map<std::string, Eigen::Vector3d> body_poses_;
         std::map<std::string, Eigen::Matrix3d> rot_poses_;
         std::map<std::string, ViveDataButtonEvent> buttonPress;
         std::map<std::string, Eigen::Vector3d> body_vel_;
@@ -85,6 +85,7 @@ namespace mc_vive_plugin
         Eigen::Vector3d init_angvel = Eigen::Vector3d{0,0,0}; 
         time_t init_t = 0; 
         time_t prev_t; 
+        int t = 0; 
     };
 
 } // namespace mc_vive_plugin

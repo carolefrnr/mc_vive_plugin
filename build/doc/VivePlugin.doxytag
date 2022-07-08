@@ -1,0 +1,519 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<tagfile>
+  <compound kind="file">
+    <name>ViveData.h</name>
+    <path>/home/carole/src/mc_vive_plugin/include/mc_vive_plugin/</path>
+    <filename>ViveData_8h.html</filename>
+    <class kind="struct">mc_vive_plugin::ViveDataButtonEvent</class>
+    <namespace>mc_vive_plugin</namespace>
+  </compound>
+  <compound kind="file">
+    <name>VivePlugin.cpp</name>
+    <path>/home/carole/src/mc_vive_plugin/src/</path>
+    <filename>VivePlugin_8cpp.html</filename>
+    <includes id="VivePlugin_8h" name="VivePlugin.h" local="yes" imported="no">VivePlugin.h</includes>
+    <includes id="VivePluginData_8h" name="VivePluginData.h" local="yes" imported="no">VivePluginData.h</includes>
+    <namespace>mc_vive_plugin</namespace>
+  </compound>
+  <compound kind="file">
+    <name>VivePlugin.h</name>
+    <path>/home/carole/src/mc_vive_plugin/src/</path>
+    <filename>VivePlugin_8h.html</filename>
+    <includes id="VivePluginData_8h" name="VivePluginData.h" local="yes" imported="no">VivePluginData.h</includes>
+    <class kind="struct">mc_vive_plugin::VivePlugin</class>
+    <namespace>mc_vive_plugin</namespace>
+  </compound>
+  <compound kind="file">
+    <name>VivePluginData.h</name>
+    <path>/home/carole/src/mc_vive_plugin/src/</path>
+    <filename>VivePluginData_8h.html</filename>
+    <includes id="ViveData_8h" name="ViveData.h" local="no" imported="no">mc_vive_plugin/ViveData.h</includes>
+    <class kind="struct">mc_vive_plugin::ViveData_Vector</class>
+    <class kind="struct">mc_vive_plugin::ViveDataControllerButton</class>
+    <class kind="struct">mc_vive_plugin::ViveData</class>
+    <class kind="class">mc_vive_plugin::ViveTracking</class>
+    <namespace>mc_vive_plugin</namespace>
+  </compound>
+  <compound kind="struct">
+    <name>mc_vive_plugin::ViveData</name>
+    <filename>structmc__vive__plugin_1_1ViveData.html</filename>
+    <member kind="variable">
+      <type>std::map&lt; std::string, Eigen::Vector3d &gt;</type>
+      <name>body_poses_</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData.html</anchorfile>
+      <anchor>a0015b57099b5c58b17bf1eb401249805</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::map&lt; std::string, Eigen::Matrix3d &gt;</type>
+      <name>rot_poses_</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData.html</anchorfile>
+      <anchor>abf2f60be800526ee64fb2aa88bf32097</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::map&lt; std::string, ViveDataButtonEvent &gt;</type>
+      <name>buttonPress</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData.html</anchorfile>
+      <anchor>a44a1eeaf025a0917acc768eea84eb3bd</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::map&lt; std::string, Eigen::Vector3d &gt;</type>
+      <name>body_vel_</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData.html</anchorfile>
+      <anchor>aeaeac9e2437bf9e468d2fe37e7c27c6d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::map&lt; std::string, Eigen::Vector3d &gt;</type>
+      <name>body_acc_</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData.html</anchorfile>
+      <anchor>a32cbb7acf9ecb2a8153906024ee4e4f7</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::map&lt; std::string, bool &gt;</type>
+      <name>isConnect</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData.html</anchorfile>
+      <anchor>a96b1e549ac59387e15c431ffe0132bc8</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>mc_vive_plugin::ViveData_Vector</name>
+    <filename>structmc__vive__plugin_1_1ViveData__Vector.html</filename>
+    <member kind="variable">
+      <type>std::vector&lt; double &gt;</type>
+      <name>q_track_head</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a6ac8c2958f999629aab23ebfddac5a2c</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; double &gt;</type>
+      <name>q_track_rhand</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a7efd8ef8bc76b17b866bee8b7d8a75fb</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; double &gt;</type>
+      <name>q_track_lhand</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>adbcf5312f65120903c0ce2a7220c58b1</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; double &gt;</type>
+      <name>q_track_rfoot</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a8f0e465c96b03c7ae65dc0d82eab987d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; double &gt;</type>
+      <name>q_track_lfoot</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a93cdd405f2b591162bdc13bb0c396a27</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; double &gt;</type>
+      <name>q_track_rarm</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a113f4f4dbae9de413fb2aad2f7233e97</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; double &gt;</type>
+      <name>q_track_larm</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a1d02a752d617a0b20e199b69034aa945</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; double &gt;</type>
+      <name>q_track_pelvis</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>ad853508db2bc70b7c8a3e43779f84ffe</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; double &gt;</type>
+      <name>q_track_elbow</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a12398c50ae533d6b705c73f6919b8bc1</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Matrix3d</type>
+      <name>r_head</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a6da156d92c956adba503d2fd35d19850</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Matrix3d</type>
+      <name>r_rhand</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a7877bfae7d1f3f1a12b0398d12782821</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Matrix3d</type>
+      <name>r_lhand</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a40b9a82fc6d09c1fbb9f865c56db7a1d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Matrix3d</type>
+      <name>r_rfoot</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a16081bb48dbdcb782c6dc05a384594ef</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Matrix3d</type>
+      <name>r_lfoot</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a2419120341ad3465c4cc6409d1cdc6e9</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Matrix3d</type>
+      <name>r_rarm</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a504888cbcd87c02f2674c4b4295ba1cd</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Matrix3d</type>
+      <name>r_larm</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a2ff3622ede175ff68c520333af1707f0</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Matrix3d</type>
+      <name>r_pelvis</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a0d7b43049170d31ad98765e8226fd317</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Matrix3d</type>
+      <name>r_elbow</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a27790aa32bfe8e3ce79fc0d7bc166bf4</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>rhand_tracked</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a0feb79bbbe2b8034ecd3265a6f761461</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>lhand_tracked</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a3e182a3053212e8246c4ade0ed7fb75b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>head_tracked</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>abcd6e893cdea3a26f52e7e5753491ab1</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>rfoot_tracked</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a7f1ac3c8111c1633832cdc3f58113759</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>lfoot_tracked</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>ad20f32e8dd051a384ec5f8e8b8c0793b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>rarm_tracked</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>adeb3ac571e2d36466950d003f5b27624</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>larm_tracked</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a87d0f232e9f945a8401814c8267961da</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>pelvis_tracked</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a0bc481cc5d8d3004dd473423100c42a4</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>t_head</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>a5ebe03cc833c8c9e5d7532a91b7180f5</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>time_t</type>
+      <name>timer</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveData__Vector.html</anchorfile>
+      <anchor>af811ec7c5de2b51a2830c4641d663b68</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>mc_vive_plugin::ViveDataButtonEvent</name>
+    <filename>structmc__vive__plugin_1_1ViveDataButtonEvent.html</filename>
+    <member kind="variable">
+      <type>bool</type>
+      <name>gripIsPress</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>acaf290b6219cebe3fec3f44949121487</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>gripIsTouch</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>accfe606cf290416381416b633bf74fca</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>menuIsPress</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>a2c85609edc07f59af7d213dafcb26a56</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>menuIsTouch</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>a9764bd995123780d3e82c2359c795aeb</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>triggerIsPress</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>abcb47c59f9690d7c0555695314cdb019</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>triggerIsTouch</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>ad59e38a13410487fd796423822179feb</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>trackpadIsPress</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>a56f6bbea2492de22870cf8c7c60cd502</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>trackpadIsTouch</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>aa68dcb7565fb3174240490d383a851f1</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>double</type>
+      <name>x</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>a416068f8b66f6c379a8e0d1e0fa9496c</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>double</type>
+      <name>y</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>a9640eccba23f063f52a35b15d165502d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>isValid</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataButtonEvent.html</anchorfile>
+      <anchor>ad87833e53f4c5781ec431ce0b5b26268</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>mc_vive_plugin::ViveDataControllerButton</name>
+    <filename>structmc__vive__plugin_1_1ViveDataControllerButton.html</filename>
+    <member kind="variable">
+      <type>ViveDataButtonEvent</type>
+      <name>RightController</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataControllerButton.html</anchorfile>
+      <anchor>ae150f79549a9b9da5e448586fe61b8ed</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ViveDataButtonEvent</type>
+      <name>LeftController</name>
+      <anchorfile>structmc__vive__plugin_1_1ViveDataControllerButton.html</anchorfile>
+      <anchor>af3789f9507ac9e2f35393f5bf59f3a75</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>mc_vive_plugin::VivePlugin</name>
+    <filename>structmc__vive__plugin_1_1VivePlugin.html</filename>
+    <member kind="function">
+      <type>void</type>
+      <name>init</name>
+      <anchorfile>structmc__vive__plugin_1_1VivePlugin.html</anchorfile>
+      <anchor>a8ec61644ce4bf15e2d2e437c2bed7af7</anchor>
+      <arglist>(mc_control::MCGlobalController &amp;controller, const mc_rtc::Configuration &amp;config) override</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>reset</name>
+      <anchorfile>structmc__vive__plugin_1_1VivePlugin.html</anchorfile>
+      <anchor>a9a618d97e413de97f4fe98a18e330248</anchor>
+      <arglist>(mc_control::MCGlobalController &amp;controller) override</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>before</name>
+      <anchorfile>structmc__vive__plugin_1_1VivePlugin.html</anchorfile>
+      <anchor>afebcd6a2266fec36a8ac0e496073b28d</anchor>
+      <arglist>(mc_control::MCGlobalController &amp;) override</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>after</name>
+      <anchorfile>structmc__vive__plugin_1_1VivePlugin.html</anchorfile>
+      <anchor>a51801c04c4b643825d346d43011c2026</anchor>
+      <arglist>(mc_control::MCGlobalController &amp;controller) override</arglist>
+    </member>
+    <member kind="function">
+      <type>mc_control::GlobalPlugin::GlobalPluginConfiguration</type>
+      <name>configuration</name>
+      <anchorfile>structmc__vive__plugin_1_1VivePlugin.html</anchorfile>
+      <anchor>aafd831d4ee5df0ac7a7e4e0498d3125b</anchor>
+      <arglist>() override</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>~VivePlugin</name>
+      <anchorfile>structmc__vive__plugin_1_1VivePlugin.html</anchorfile>
+      <anchor>aca5c969fea73bf0f6d7b0d7922429a66</anchor>
+      <arglist>() override</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>mc_vive_plugin::ViveTracking</name>
+    <filename>classmc__vive__plugin_1_1ViveTracking.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>~ViveTracking</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>a1d81ffe324149a43cc139fd49f163d93</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>ViveTracking</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>ae8c06faff625ae022949cb604403f5ff</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>ViveData_Vector</type>
+      <name>getPoseData</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>a8c6640feaecc3ac61c4cebbe71ac386a</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>ViveDataControllerButton</type>
+      <name>getControllerEvent</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>a76b4a0338dea250828b9ab318675f819</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>ViveDataButtonEvent</type>
+      <name>assignedButtonEvent</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>ad841344684abfe95554994372a4dc5b0</anchor>
+      <arglist>(vr::VRControllerState_t state, ViveDataButtonEvent joy, vr::TrackedDeviceIndex_t unDevice, bool m_rbShowTrackedDevice[vr::k_unMaxTrackedDeviceCount])</arglist>
+    </member>
+    <member kind="function">
+      <type>Eigen::Vector3d</type>
+      <name>AccelData</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>a176378b4a71c8b5024a2d343cc4d76c7</anchor>
+      <arglist>(std::vector&lt; double &gt; dataHTC, time_t t, bool init, Eigen::Vector3d prev_data)</arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Vector3d</type>
+      <name>init_vel</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>a791f2456a7dac828b9c80ecfb5bb122b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Eigen::Vector3d</type>
+      <name>init_angvel</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>a190863a48b50a6f70ebc35a7aa6a3a56</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>time_t</type>
+      <name>init_t</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>ad0ac53bb643a38ed2592535e21790652</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>time_t</type>
+      <name>prev_t</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>ab8e59e6d6829134a747064cb766d313a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>t</name>
+      <anchorfile>classmc__vive__plugin_1_1ViveTracking.html</anchorfile>
+      <anchor>a8d3ad9b69514b6a88095781e48cd9392</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="namespace">
+    <name>mc_vive_plugin</name>
+    <filename>namespacemc__vive__plugin.html</filename>
+    <class kind="struct">mc_vive_plugin::ViveData</class>
+    <class kind="struct">mc_vive_plugin::ViveData_Vector</class>
+    <class kind="struct">mc_vive_plugin::ViveDataButtonEvent</class>
+    <class kind="struct">mc_vive_plugin::ViveDataControllerButton</class>
+    <class kind="struct">mc_vive_plugin::VivePlugin</class>
+    <class kind="class">mc_vive_plugin::ViveTracking</class>
+  </compound>
+</tagfile>

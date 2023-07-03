@@ -172,6 +172,33 @@ ViveData_Vector ViveTracking::getPoseData() {
   return tracking;
 }
 
+void ViveTracking::triggerHaptics(bool triggerRight_, bool triggerLeft_)
+{
+  for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++) {
+    vr::ETrackedDeviceClass trackedDeviceClass = vr_pointer->GetTrackedDeviceClass(unDevice);
+    if(trackedDeviceClass==vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+      auto trackedControllerRole = vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice);
+      switch(trackedControllerRole){
+        case vr::TrackedControllerRole_RightHand :
+          if(triggerRight_){
+            vr_pointer->TriggerHapticPulse(unDevice, 0, 300); 
+          } 
+          break; 
+        case vr::TrackedControllerRole_LeftHand: 
+          if(triggerLeft_){
+            vr_pointer->TriggerHapticPulse(unDevice, 0, 300); 
+          } 
+          break; 
+        case vr::TrackedControllerRole_Invalid:
+          //invalid
+          break; 
+        default:
+          //other cases
+          break; 
+      }
+    }
+  }
+}
 
 /** Get VR Button Events
  * For HTC VIVE
@@ -185,14 +212,13 @@ ViveData_Vector ViveTracking::getPoseData() {
  */
 ViveDataControllerButton ViveTracking::getControllerEvent() {
   ViveDataControllerButton joy;
+
   bool m_rbShowTrackedDevice[vr::k_unMaxTrackedDeviceCount];
   for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++) {
     vr::ETrackedDeviceClass trackedDeviceClass = vr_pointer->GetTrackedDeviceClass(unDevice);
 
     if (!vr_pointer->IsTrackedDeviceConnected(unDevice))
-        continue;
-  
-        
+        continue;       
 
       vr::VRControllerState_t state;
 
@@ -225,66 +251,57 @@ ViveDataControllerButton ViveTracking::getControllerEvent() {
 
 ViveDataButtonEvent ViveTracking::assignedButtonEvent(vr::VRControllerState_t state, ViveDataButtonEvent joy, vr::TrackedDeviceIndex_t unDevice,bool m_rbShowTrackedDevice[vr::k_unMaxTrackedDeviceCount]) {
     state.ulButtonPressed = 0;
+    state.ulButtonTouched = 0;
     if (vr_pointer->GetControllerState(unDevice, &state, sizeof(state))) {
       m_rbShowTrackedDevice[unDevice] = state.ulButtonPressed == 0;
-      if (state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Axis1)) { // Trigger
-      if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Axis1)) {
+      m_rbShowTrackedDevice[unDevice] = state.ulButtonTouched == 0;
+      // Trigger
+      if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Axis1) || state.ulButtonTouched == mc_vive_plugin::Touchpad_Trigger){ 
+        joy.triggerIsTouch= true;
+      } else{ joy.triggerIsTouch = false; }
+      if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Axis1) || state.ulButtonTouched == mc_vive_plugin::Touchpad_Trigger){
         joy.triggerIsPress = true;
-      }else{joy.triggerIsPress = false;}
-      joy.triggerIsTouch= true;
-      }
-      else if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)){ // Menu
-      if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
-        joy.menuIsPress = true;
-      }else{joy.menuIsPress = false;}
-      joy.menuIsTouch= true;
-      }
-      else if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Grip)){ // Grippers (left and right) 
-      joy.gripIsPress = true; 
-      // if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
-      //   joy.gripIsPress = true;
-      // }else{joy.gripIsPress = false; }
-      // joy.gripIsTouch= true;
-      }
-      else if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Axis0)){ // Touchpad
-        if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
-          joy.trackpadIsPress = true;
-        }else{joy.gripIsTouch = false;}
+      } else{ joy.triggerIsPress = false; }
+      // Touchpad
+      if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Axis0) || state.ulButtonTouched == mc_vive_plugin::Touchpad_Trigger){ 
         joy.trackpadIsTouch= true;
+        joy.x = 0; //state.rAxis->x;
+        joy.y = 0; //state.rAxis->y;
+      } else{ joy.trackpadIsTouch = false; }
+      if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_Axis0) || state.ulButtonTouched == mc_vive_plugin::Touchpad_Trigger){
+        joy.trackpadIsPress = true;
         joy.x = state.rAxis->x;
         joy.y = state.rAxis->y;
-      }
-      else{
-        joy.gripIsPress = joy.gripIsTouch = joy.menuIsTouch = joy.triggerIsTouch = joy.trackpadIsTouch = false;
+      } else{ joy.trackpadIsPress = false; }
+      // Menu 
+      if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu) || state.ulButtonTouched == mc_vive_plugin::Touchpad_Trigger_Gripper_Menu || 
+         state.ulButtonTouched == mc_vive_plugin::Touchpad_Gripper_Menu  || state.ulButtonTouched == mc_vive_plugin::Touchpad_Trigger_Menu || state.ulButtonTouched == mc_vive_plugin::Trigger_Gripper_Menu ||
+         state.ulButtonTouched == mc_vive_plugin::Touchpad_Menu || state.ulButtonTouched == mc_vive_plugin::Trigger_Menu || state.ulButtonPressed == mc_vive_plugin::Gripper_Menu )
+      { 
+       joy.menuIsTouch = true;
+      }else{joy.menuIsTouch = false;}
+      if(state.ulButtonPressed == vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu) || state.ulButtonPressed == mc_vive_plugin::Touchpad_Trigger_Gripper_Menu || 
+         state.ulButtonPressed == mc_vive_plugin::Touchpad_Gripper_Menu  || state.ulButtonPressed == mc_vive_plugin::Touchpad_Trigger_Menu || state.ulButtonPressed == mc_vive_plugin::Trigger_Gripper_Menu ||
+         state.ulButtonPressed == mc_vive_plugin::Touchpad_Menu || state.ulButtonPressed == mc_vive_plugin::Trigger_Menu || state.ulButtonPressed == mc_vive_plugin::Gripper_Menu )
+      { 
+        joy.menuIsPress = true;
+      } else{joy.menuIsPress = false; }; 
+      // Gripper
+      if(state.ulButtonTouched == vr::ButtonMaskFromId(vr::k_EButton_Grip)){ 
+        joy.gripIsPress = true; joy.gripIsTouch = true; //The button is not very effective, to improve the feedback, the button pressed and the touch are identical.
+      }else {joy.gripIsPress = false; joy.gripIsTouch = false; }
+      // No button 
+      if(state.ulButtonTouched == 0)
+      {
+        joy.triggerIsPress = false ; joy.triggerIsTouch = false; 
+        joy.trackpadIsTouch = false; joy.trackpadIsPress = false; 
+        joy.gripIsTouch = false;     joy.gripIsPress = false ;  
+        joy.menuIsTouch = false;     joy.menuIsPress = false; 
         joy.x = joy.y = 0;
       }
     }
+    
   return joy;
-}
-
-Eigen::Vector3d ViveTracking::AccelData(std::vector<double> data, time_t t, bool init, Eigen::Vector3d prev_data){
-  Eigen::Vector3d acc; 
-  // Eigen::Vector3d angacc; 
-  Eigen::Vector3d vel = {data[7],data[8],data[9]}; //Eigen::Vector3d angvel = {data[10],data[11],data[12]}; 
-
-  if(init){
-    acc = (vel - init_vel)/(t - init_t); 
-    init = false; 
-    // mc_rtc::log::info(vel);  
-    // mc_rtc::log::info(acc);  
-
-  }
-  else{
-    acc = (vel - prev_data)/(t - prev_t); 
-  }  
-  prev_t = t;
-  // mc_rtc::log::info(data[7]);  
-  // FILE *fp = fopen("/home/carolefournier/src/acc.csv", "a"); 
-  // fprintf(fp, "%lf%s%lf%s%lf", acc[0], ";", acc[1], ";", acc[2]);
-  // fprintf(fp, "\n"); 
-  // fclose(fp); 
-
-  return acc; 
 }
 
 VivePlugin::~VivePlugin()
@@ -311,16 +328,20 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
   ctl.datastore().make_call("VivePlugin::GetRot", [&data_rot](std::string & segmentName) {return data_rot.rot_poses_.at(segmentName);});
   //Button events
   auto & button_event = ctl.datastore().make<ViveData>("VivePlugin::Button");
-  ctl.datastore().make_call("VivePlugin::GetButtonEvent",[&button_event](std::string & buttonName) {return button_event.buttonPress.at(buttonName);});
+  ctl.datastore().make_call("VivePlugin::GetButtonEvent",[&button_event](std::string & deviceName) {return button_event.buttonPress.at(deviceName);});
   // Datastore - angular velocity - 
-  auto & data_vel = ctl.datastore().make<ViveData>("VivePlugin::Velocity"); 
-  ctl.datastore().make_call("VivePlugin::GetAngularVelocity", [&data_vel](std::string & segmentName) {return data_vel.body_vel_.at(segmentName);});
+  auto & data_ang_vel = ctl.datastore().make<ViveData>("VivePlugin::AngularVelocity"); 
+  ctl.datastore().make_call("VivePlugin::GetAngularVelocity", [&data_ang_vel](std::string & segmentName) {return data_ang_vel.body_vel_.at(segmentName);});
+  // Datastore - linear velocity - 
+  auto & data_vel = ctl.datastore().make<ViveData>("VivePlugin::LinearVelocity"); 
+  ctl.datastore().make_call("VivePlugin::GetLinearVelocity", [&data_vel](std::string & segmentName) {return data_vel.body_vel_.at(segmentName);});
   // Acceleration 
   auto & data_acc = ctl.datastore().make<ViveData>("VivePlugin::Acceleration"); 
   ctl.datastore().make_call("VivePlugin::GetAcceleration", [&data_acc](std::string & segmentName) {return data_acc.body_acc_.at(segmentName);});
   // Connected or not connected ? That is the question
   auto & connect = ctl.datastore().make<ViveData>("VivePlugin::DeviceConnected");
   ctl.datastore().make_call("VivePlugin::GetTrackingInfo",[&connect](std::string & deviceName){return connect.isConnect.at(deviceName);});
+  
 
   th_ = std::thread(
     [this]()
@@ -331,6 +352,7 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
     {
     auto dataHTC = Vive.getPoseData();
     auto buttonHTC = Vive.getControllerEvent();
+    
     std::lock_guard<std::mutex> lock(mut_);
     /** Retargetting
      * For each bodypart define in table "bodyPart", it will be associated
@@ -342,15 +364,15 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
       std::string & name = bodyPart[i];
       Eigen::Vector3d target{};
       Eigen::Vector3d targetPepper{};
-      time_t t = dataHTC.timer; 
       switch (i){
         case 0: // Head
           if(!dataHTC.q_track_head.empty()){
             data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_head[0], dataHTC.q_track_head[1], dataHTC.q_track_head[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_head.transpose();
-            auto acc = Vive.AccelData(dataHTC.q_track_head, t, dataHTC.t_head, data_vel_.body_vel_[name]); 
-            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_head[10], dataHTC.q_track_head[11], dataHTC.q_track_head[12]);
-            data_vel_.body_acc_[name] = acc; 
+            //auto acc = Vive.AccelData(dataHTC.q_track_head, t, dataHTC.t_head, data_vel_.body_vel_[name]); 
+            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_head[7], dataHTC.q_track_head[8], dataHTC.q_track_head[9]);
+            data_ang_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_head[10], dataHTC.q_track_head[11], dataHTC.q_track_head[12]);
+            // data_vel_.body_acc_[name] = acc; 
             isTracked.isConnect[name] = dataHTC.head_tracked; 
           }
           break;
@@ -358,7 +380,8 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           if(!dataHTC.q_track_lhand.empty()){
             data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_lhand[0], dataHTC.q_track_lhand[1], dataHTC.q_track_lhand[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_lhand.transpose();
-            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_lhand[10], dataHTC.q_track_lhand[11], dataHTC.q_track_lhand[12]); 
+            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_lhand[7], dataHTC.q_track_lhand[8], dataHTC.q_track_lhand[9]);
+            data_ang_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_lhand[10], dataHTC.q_track_lhand[11], dataHTC.q_track_lhand[12]); 
             isTracked.isConnect[name] = dataHTC.lhand_tracked; 
           }
           break;
@@ -366,7 +389,8 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           if(!dataHTC.q_track_rhand.empty()){
             data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_rhand[0], dataHTC.q_track_rhand[1], dataHTC.q_track_rhand[2]);  
             rotdata_.rot_poses_[name] = dataHTC.r_rhand.transpose();
-            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rhand[10], dataHTC.q_track_rhand[11], dataHTC.q_track_rhand[12]); 
+            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rhand[7], dataHTC.q_track_rhand[8], dataHTC.q_track_rhand[9]);
+            data_ang_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rhand[10], dataHTC.q_track_rhand[11], dataHTC.q_track_rhand[12]); 
             isTracked.isConnect[name] = dataHTC.rhand_tracked; 
           }
           break;
@@ -374,7 +398,8 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           if(!dataHTC.q_track_larm.empty()){
             data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_larm[0], dataHTC.q_track_larm[1], dataHTC.q_track_larm[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_larm.transpose();
-            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_larm[10], dataHTC.q_track_larm[11], dataHTC.q_track_larm[12]); 
+            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_larm[7], dataHTC.q_track_larm[8], dataHTC.q_track_larm[9]);
+            data_ang_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_larm[10], dataHTC.q_track_larm[11], dataHTC.q_track_larm[12]); 
             isTracked.isConnect[name] = dataHTC.larm_tracked; 
           }
           break;
@@ -382,7 +407,8 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           if(!dataHTC.q_track_rarm.empty()){
             data_.body_poses_[name]  = Eigen::Vector3d(dataHTC.q_track_rarm[0], dataHTC.q_track_rarm[1], dataHTC.q_track_rarm[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_rarm.transpose();
-            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rarm[10], dataHTC.q_track_rarm[11], dataHTC.q_track_rarm[12]); 
+            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rarm[7], dataHTC.q_track_rarm[8], dataHTC.q_track_rarm[9]);
+            data_ang_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rarm[10], dataHTC.q_track_rarm[11], dataHTC.q_track_rarm[12]); 
             isTracked.isConnect[name] = dataHTC.rarm_tracked; 
           }
           break;
@@ -390,7 +416,8 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           if(!dataHTC.q_track_lfoot.empty()){
             data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_lfoot[0], dataHTC.q_track_lfoot[1], dataHTC.q_track_lfoot[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_lfoot.transpose();
-            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_lfoot[10], dataHTC.q_track_lfoot[11], dataHTC.q_track_lfoot[12]); 
+            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_lfoot[7], dataHTC.q_track_lfoot[8], dataHTC.q_track_lfoot[9]);
+            data_ang_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_lfoot[10], dataHTC.q_track_lfoot[11], dataHTC.q_track_lfoot[12]); 
             isTracked.isConnect[name] = dataHTC.lfoot_tracked; 
           }
           break;
@@ -398,7 +425,8 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           if(!dataHTC.q_track_rfoot.empty()){
             data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_rfoot[0], dataHTC.q_track_rfoot[1], dataHTC.q_track_rfoot[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_rfoot.transpose();
-            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rfoot[10], dataHTC.q_track_rfoot[11], dataHTC.q_track_rfoot[12]); 
+            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rfoot[7], dataHTC.q_track_rfoot[8], dataHTC.q_track_rfoot[9]);
+            data_ang_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_rfoot[10], dataHTC.q_track_rfoot[11], dataHTC.q_track_rfoot[12]); 
             isTracked.isConnect[name] = dataHTC.rfoot_tracked; 
           }
           break;
@@ -406,7 +434,8 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
           if(!dataHTC.q_track_pelvis.empty()){
             data_.body_poses_[name] = Eigen::Vector3d(dataHTC.q_track_pelvis[0], dataHTC.q_track_pelvis[1], dataHTC.q_track_pelvis[2]); 
             rotdata_.rot_poses_[name] = dataHTC.r_pelvis.transpose();
-            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_pelvis[10], dataHTC.q_track_pelvis[11], dataHTC.q_track_pelvis[12]); 
+            data_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_pelvis[7], dataHTC.q_track_pelvis[8], dataHTC.q_track_pelvis[9]);
+            data_ang_vel_.body_vel_[name] = Eigen::Vector3d(dataHTC.q_track_pelvis[10], dataHTC.q_track_pelvis[11], dataHTC.q_track_pelvis[12]); 
             isTracked.isConnect[name] = dataHTC.pelvis_tracked; 
           }
           break;
@@ -419,23 +448,29 @@ void VivePlugin::init(mc_control::MCGlobalController & controller, const mc_rtc:
      * Button system and menu
      * Trigger
      */
-      std::string Controller_RL[] = {"RightController", "LeftController"};
-      for (int i = 0; i < int(sizeof(Controller_RL)); i++){
-        std::string & name = Controller_RL[i];
-        switch(i){
-          case 0: //RightController
-            button_.buttonPress[name] = buttonHTC.RightController;
-            break;
-          case 1: //LeftController
-            button_.buttonPress[name] = buttonHTC.LeftController;
-            break;
-        }
+    std::string Controller_RL[] = {"RightController", "LeftController"};
+    for (int i = 0; i < int(sizeof(Controller_RL)); i++){
+      std::string & name = Controller_RL[i];
+      switch(i){
+        case 0: //RightController
+        // 
+          button_.buttonPress[name] = buttonHTC.RightController;
+          break;
+        case 1: //LeftController
+          button_.buttonPress[name] = buttonHTC.LeftController;
+          break;
       }
-
-    }//end while running
     }
-  );
 
+    /**
+     * Trigger Haptics 
+     * 
+    */
+    Vive.triggerHaptics(rightHaptics_, leftHaptics_); //right hand
+
+  }//end while running
+}
+);
 }
 
 void VivePlugin::reset(mc_control::MCGlobalController & /* controller */)
@@ -446,7 +481,6 @@ void VivePlugin::reset(mc_control::MCGlobalController & /* controller */)
 void VivePlugin::before(mc_control::MCGlobalController & controller)
 {
   auto & ctl = controller.controller();
-
   std::lock_guard<std::mutex> lock(mut_);
   auto & data = ctl.datastore().get<ViveData>("VivePlugin::Data");
   data = data_;
@@ -454,10 +488,18 @@ void VivePlugin::before(mc_control::MCGlobalController & controller)
   data_rot = rotdata_;
   auto & button_event = ctl.datastore().get<ViveData>("VivePlugin::Button");
   button_event = button_;
-  auto & data_vel = ctl.datastore().get<ViveData>("VivePlugin::Velocity"); 
+  auto & data_vel = ctl.datastore().get<ViveData>("VivePlugin::LinearVelocity"); 
   data_vel = data_vel_; 
+  auto & data_ang_vel = ctl.datastore().get<ViveData>("VivePlugin::AngularVelocity"); 
+  data_ang_vel = data_ang_vel_; 
   auto & connect = ctl.datastore().get<ViveData>("VivePlugin::DeviceConnected"); 
   connect = isTracked; 
+  if(ctl.datastore().has("TeleoPepper::HapticFeedback"))
+  {
+    rightHaptics_ = ctl.datastore().call<bool>("TeleoPepper::GetHapticFeedback", Controller_RL[0]); 
+    leftHaptics_  = ctl.datastore().call<bool>("TeleoPepper::GetHapticFeedback", Controller_RL[1]); 
+  }
+
 }
 
 void VivePlugin::after(mc_control::MCGlobalController & /* controller */)

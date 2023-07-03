@@ -40,7 +40,11 @@ private:
   ViveData rotdata_;
   ViveData button_;
   ViveData data_vel_; 
+  ViveData data_ang_vel_; 
   ViveData isTracked; 
+  bool rightHaptics_; 
+  bool leftHaptics_; 
+  std::string Controller_RL[2] = {"RightController", "LeftController"};
 };
 
 } // namespace mc_vive_plugin

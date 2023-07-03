@@ -9,6 +9,21 @@
 
 namespace mc_vive_plugin
 {
+    enum MaskButton {
+        Touchpad = 4294967296,
+        Trigger = 8589934592, 
+        Touchpad_Trigger = 12884901888, 
+        Touchpad_Gripper = 4294967300,
+        Trigger_Gripper = 8589934596, 
+        Touchpad_Menu = 4294967298,
+        Trigger_Menu = 8589934596, 
+        Touchpad_Trigger_Menu = 12884901890, 
+        Touchpad_Gripper_Menu = 4294967302, 
+        Trigger_Gripper_Menu = 8589934598, 
+        Gripper_Menu = 6, 
+        Touchpad_Trigger_Gripper_Menu = 12884901892
+    }; 
+
     // Pose and rotation data of controller and trackers
     struct ViveData_Vector {
         // In order this vector contains
@@ -60,6 +75,7 @@ namespace mc_vive_plugin
         std::map<std::string, Eigen::Vector3d> body_poses_;
         std::map<std::string, Eigen::Matrix3d> rot_poses_;
         std::map<std::string, ViveDataButtonEvent> buttonPress;
+        std::map<std::string, bool> buttonValue_;
         std::map<std::string, Eigen::Vector3d> body_vel_;
         std::map<std::string, Eigen::Vector3d> body_acc_;
         std::map<std::string, bool> isConnect;
@@ -79,6 +95,7 @@ namespace mc_vive_plugin
         ViveDataControllerButton getControllerEvent();
         ViveDataButtonEvent assignedButtonEvent(vr::VRControllerState_t state, ViveDataButtonEvent joy, vr::TrackedDeviceIndex_t unDevice,bool m_rbShowTrackedDevice[vr::k_unMaxTrackedDeviceCount]);
         Eigen::Vector3d AccelData(std::vector<double> dataHTC, time_t t, bool init, Eigen::Vector3d prev_data); 
+        void triggerHaptics(bool triggerRight_, bool triggerLeft_); 
         
         //Variables 
         Eigen::Vector3d init_vel = Eigen::Vector3d{0,0,0};  
